@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { Resend } = require('resend');
 
-const resend = new Resend('re_NgMNqGXE_23tfsV3vV3BFR89BryQSBZNG');
+const resend = new Resend(process.env.RESEND_API_KEY || 'your_new_key_here');
 
 async function sendNtfy(message, tags = "speech_balloon") {
     try {
