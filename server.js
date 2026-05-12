@@ -94,7 +94,7 @@ setInterval(async () => {
     const dataToSave = {
         visitors: {}
     };
-    
+
     visitors.forEach((visitor, visitorId) => {
         dataToSave.visitors[visitorId] = {
             topicId: visitor.topicId,
@@ -107,7 +107,7 @@ setInterval(async () => {
             hasLeft: visitor.hasLeft || false,
         };
     });
-    
+
     await saveData(dataToSave);
 }, 30000); // Save every 30 seconds
 
@@ -116,7 +116,7 @@ async function saveImmediately() {
     const dataToSave = {
         visitors: {}
     };
-    
+
     visitors.forEach((visitor, visitorId) => {
         dataToSave.visitors[visitorId] = {
             topicId: visitor.topicId,
@@ -129,7 +129,7 @@ async function saveImmediately() {
             hasLeft: visitor.hasLeft || false,
         };
     });
-    
+
     await saveData(dataToSave);
 }
 
@@ -251,7 +251,9 @@ function broadcastChatList() {
                 : getTimestamp(),
             unread: visitor.unreadCount || 0,
             isTyping: visitor.isTyping || false,
-            connectedAt: visitor.connectedAt
+            connectedAt: visitor.connectedAt,
+            email: visitor.email,
+            name: visitor.name
         });
     });
 
@@ -734,7 +736,7 @@ io.on('connection', (socket) => {
                 visitor.socketId = null;
                 visitor.isOnline = false;
                 console.log(`👤 Visitor ${socket.visitorId} disconnected (data preserved - ${visitor.messages.length} messages)`);
-                
+
                 // Don't auto-cleanup - keep data permanently unless admin ends chat
                 broadcastChatList();
                 saveImmediately();
