@@ -253,7 +253,8 @@ function broadcastChatList() {
             isTyping: visitor.isTyping || false,
             connectedAt: visitor.connectedAt,
             email: visitor.email,
-            name: visitor.name
+            name: visitor.name,
+            isOnline: visitor.isOnline
         });
     });
 
@@ -338,6 +339,12 @@ io.on('connection', (socket) => {
             });
 
             console.log(`🔄 Visitor reconnected: ${visitorId} (${existingVisitor.messages.length} messages restored)`);
+            
+            io.emit('visitor_online_status', {
+                visitorId: visitorId,
+                isOnline: true
+            });
+            
             broadcastChatList();
             saveImmediately();
             return;
@@ -362,6 +369,11 @@ io.on('connection', (socket) => {
 
         socket.visitorId = visitorId;
         socket.emit('topic_created', topicId);
+
+        io.emit('visitor_online_status', {
+            visitorId: visitorId,
+            isOnline: true
+        });
 
         broadcastChatList();
         saveImmediately();
@@ -736,6 +748,12 @@ io.on('connection', (socket) => {
                 visitor.socketId = null;
                 visitor.isOnline = false;
                 console.log(`👤 Visitor ${socket.visitorId} disconnected (data preserved - ${visitor.messages.length} messages)`);
+
+                io.emit('visitor_online_status', {
+                    visitorId: socket.visitorId,
+                    isOnline: false,
+                    lastSeen: Date.now()
+                });
 
                 // Don't auto-cleanup - keep data permanently unless admin ends chat
                 broadcastChatList();
